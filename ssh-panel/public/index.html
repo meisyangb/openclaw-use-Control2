@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSH Remote Control Panel - Enhanced</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e4e4e4;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h1 i {
+            font-size: 24px;
+        }
+
+        /* Model Health Monitor */
+        .model-health {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .model-health-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .model-health-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.healthy {
+            background: #0f0;
+        }
+
+        .status-indicator.warning {
+            background: #ff0;
+        }
+
+        .status-indicator.error {
+            background: #f00;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .model-name {
+            font-size: 12px;
+            color: #00d4ff;
+            font-family: monospace;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .server-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .server-group {
+            margin-bottom: 15px;
+        }
+
+        .server-group-header {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .server-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .server-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
+            transform: translateX(2px);
+        }
+
+        .server-item.connected {
+            border-color: #0f0;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .server-item.connected::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #0f0;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .server-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .server-name i {
+            font-size: 14px;
+            color: #00d4ff;
+        }
+
+        .server-host {
+            font-size: 12px;
+            color: #888;
+            font-family: monospace;
+            margin-bottom: 6px;
+        }
+
+        .server-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .server-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-connect {
+            background: #00d4ff;
+            color: #000;
+        }
+
+        .btn-connect:hover {
+            background: #00b8e6;
+            transform: scale(1.05);
+        }
+
+        .btn-disconnect {
+            background: #ff9800;
+            color: #000;
+        }
+
+        .btn-delete {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .btn-delete:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .terminal-header {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .terminal-title {
+            font-family: monospace;
+            color: #00d4ff;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-disconnected {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .status-connected {
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+        }
+
+        .terminal-toolbar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .toolbar-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #e4e4e4;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00d4ff;
+        }
+
+        .toolbar-btn i {
+            font-size: 14px;
+        }
+
+        /* Quick Commands */
+        .quick-commands {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quick-cmd {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #00d4ff;
+            font-family: monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-cmd:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+            transform: translateY(-1px);
+        }
+
+        .terminal-container {
+            flex: 1;
+            padding: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #terminal {
+            flex: 1;
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Logs Panel */
+        .logs-panel {
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            flex-direction: column;
+        }
+
+        .logs-panel.active {
+            display: flex;
+        }
+
+        .logs-header {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logs-title {
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logs-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .log-time {
+            color: #666;
+        }
+
+        .log-message {
+            color: #e4e4e4;
+        }
+
+        .log-message.error {
+            color: #ff4444;
+        }
+
+        .log-message.success {
+            color: #0f0;
+        }
+
+        .log-message.info {
+            color: #00d4ff;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal h2 i {
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-color: #0f0;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .toast.error {
+            border-color: #f00;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .toast.info {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .terminal-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-terminal"></i> SSH Panel</h1>
+                
+                <!-- Model Health Monitor -->
+                <div class="model-health">
+                    <div class="model-health-header">
+                        <i class="fas fa-heartbeat"></i> 模型健康监控
+                    </div>
+                    <div class="model-health-status">
+                        <div class="status-indicator healthy" id="modelStatusIndicator"></div>
+                        <span class="model-name" id="currentModelName">zai/glm-4.5-air</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="搜索服务器..." id="searchInput" onkeyup="filterServers()">
+            </div>
+
+            <div class="server-list" id="serverList">
+                <!-- Servers will be populated here -->
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="btn-add" onclick="showAddModal()">
+                    <i class="fas fa-plus"></i> 添加服务器
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <div class="terminal-header">
+                <div class="terminal-info">
+                    <div class="terminal-title">
+                        <i class="fas fa-server"></i>
+                        <span id="terminalTitle">未连接</span>
+                    </div>
+                    <div class="terminal-status status-disconnected" id="terminalStatus">
+                        <i class="fas fa-circle"></i> 未连接
+                    </div>
+                </div>
+                <div class="terminal-toolbar">
+                    <button class="toolbar-btn" onclick="toggleLogs()" title="连接日志">
+                        <i class="fas fa-list-alt"></i> 日志
+                    </button>
+                    <button class="toolbar-btn" onclick="clearTerminal()" title="清屏">
+                        <i class="fas fa-trash"></i> 清屏
+                    </button>
+                    <button class="toolbar-btn" onclick="toggleSidebar()" title="切换侧边栏">
+                        <i class="fas fa-columns"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Commands -->
+            <div class="quick-commands" id="quickCommands">
+                <button class="quick-cmd" onclick="sendQuickCommand('ls -la')">ls -la</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('pwd')">pwd</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('top')">top</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('df -h')">df -h</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('free -h')">free -h</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('systemctl status')">systemctl status</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('tail -f /var/log/syslog')">tail syslog</button>
+                <button class="quick-cmd" onclick="sendQuickCommand('docker ps')">docker ps</button>
+            </div>
+
+            <div class="terminal-container">
+                <div id="terminal"></div>
+            </div>
+
+            <!-- Logs Panel -->
+            <div class="logs-panel" id="logsPanel">
+                <div class="logs-header">
+                    <div class="logs-title">
+                        <i class="fas fa-terminal"></i> 连接日志
+                    </div>
+                    <button class="toolbar-btn" onclick="clearLogs()">
+                        <i class="fas fa-trash"></i> 清空
+                    </button>
+                </div>
+                <div class="logs-content" id="logsContent">
+                    <!-- Logs will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Server Modal -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <h2><i class="fas fa-server"></i> 添加服务器</h2>
+            <form id="serverForm" onsubmit="saveServer(event)">
+                <div class="form-group">
+                    <label>服务器名称</label>
+                    <input type="text" id="serverName" placeholder="我的服务器">
+                </div>
+                <div class="form-group">
+                    <label>主机地址 *</label>
+                    <input type="text" id="serverHost" placeholder="192.168.1.100" required>
+                </div>
+                <div class="form-group">
+                    <label>端口</label>
+                    <input type="number" id="serverPort" value="22" placeholder="22">
+                </div>
+                <div class="form-group">
+                    <label>用户名 *</label>
+                    <input type="text" id="serverUser" placeholder="root" required>
+                </div>
+                <div class="form-group">
+                    <label>认证方式</label>
+                    <select id="authMethod" onchange="toggleAuthFields()">
+                        <option value="password">密码认证</option>
+                        <option value="key">私钥认证</option>
+                    </select>
+                </div>
+                <div class="form-group" id="passwordGroup">
+                    <label>密码</label>
+                    <input type="password" id="serverPassword" placeholder="SSH密码">
+                </div>
+                <div class="form-group" id="keyGroup" style="display:none;">
+                    <label>私钥</label>
+                    <textarea id="serverKey" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"></textarea>
+                    <div class="form-hint">粘贴完整的SSH私钥内容</div>
+                </div>
+                <div class="form-group" id="passphraseGroup" style="display:none;">
+                    <label>私钥密码</label>
+                    <input type="password" id="serverPassphrase" placeholder="私钥密码(可选)">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddModal()">
+                        <i class="fas fa-times"></i> 取消
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Terminal setup
+        let term = null;
+        let fitAddon = null;
+        let socket = null;
+        let currentServer = null;
+        let logs = [];
+
+        // Initialize Terminal
+        function initTerminal() {
+            const terminalEl = document.getElementById('terminal');
+            term = new Terminal({
+                theme: {
+                    background: '#0a0a0a',
+                    foreground: '#e4e4e4',
+                    cursor: '#00d4ff',
+                    cursorAccent: '#000',
+                    selection: 'rgba(0, 212, 255, 0.3)',
+                    black: '#000',
+                    red: '#ff4444',
+                    green: '#0f0',
+                    yellow: '#ff0',
+                    blue: '#00d4ff',
+                    magenta: '#ff00ff',
+                    cyan: '#00ffff',
+                    white: '#fff',
+                    brightBlack: '#666',
+                    brightRed: '#ff6666',
+                    brightGreen: '#0f0',
+                    brightYellow: '#ffff00',
+                    brightBlue: '#66d9ff',
+                    brightMagenta: '#ff66ff',
+                    brightCyan: '#66ffff',
+                    brightWhite: '#fff'
+                },
+                fontFamily: 'Monaco, Menlo, "Courier New", monospace',
+                fontSize: 14,
+                lineHeight: 1.2,
+                cursorBlink: true,
+                cursorStyle: 'block',
+                scrollback: 10000
+            });
+
+            fitAddon = new FitAddon.FitAddon();
+            const webLinksAddon = new WebLinksAddon.WebLinksAddon();
+
+            term.loadAddon(fitAddon);
+            term.loadAddon(webLinksAddon);
+            term.open(terminalEl);
+            fitAddon.fit();
+
+            showWelcome();
+            
+            // Resize handler
+            window.addEventListener('resize', () => {
+                fitAddon.fit();
+            });
+
+            // Terminal input
+            term.onData((data) => {
+                if (socket && socket.connected) {
+                    socket.emit('ssh:data', { data: btoa(data) });
+                }
+            });
+        }
+
+        function showWelcome() {
+            term.writeln('\x1b[36m╔════════════════════════════════════════════════════════════╗\x1b[0m');
+            term.writeln('\x1b[36m║     SSH Remote Control Panel - Enhanced v2.0.0           ║\x1b[0m');
+            term.writeln('\x1b[36m╠════════════════════════════════════════════════════════════╣\x1b[0m');
+            term.writeln('\x1b[36m║  功能:                                                      ║\x1b[0m');
+            term.writeln('\x1b[36m║  • 多服务器管理与搜索                                       ║\x1b[0m');
+            term.writeln('\x1b[36m║  • 快捷命令按钮                                             ║\x1b[0m');
+            term.writeln('\x1b[36m║  • 连接日志记录                                             ║\x1b[0m');
+            term.writeln('\x1b[36m║  • 模型健康监控                                             ║\x1b[0m');
+            term.writeln('\x1b[36m║                                                            ║\x1b[0m');
+            term.writeln('\x1b[36m║  快速开始:                                                  ║\x1b[0m');
+            term.writeln('\x1b[36m║  1. 点击"添加服务器"配置SSH连接                             ║\x1b[0m');
+            term.writeln('\x1b[36m║  2. 或从左侧列表选择服务器并点击"连接"                      ║\x1b[0m');
+            term.writeln('\x1b[36m╚════════════════════════════════════════════════════════════╝\x1b[0m');
+            term.writeln('');
+        }
+
+        function initSocket() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('Socket connected');
+                addLog('info', '已连接到服务器');
+            });
+
+            socket.on('ssh:connected', (data) => {
+                term.writeln(`\x1b[32m[SSH] 已连接到 ${data.username}@${data.host}:${data.port}\x1b[0m`);
+                document.getElementById('terminalStatus').innerHTML = '<i class="fas fa-circle"></i> 已连接';
+                document.getElementById('terminalStatus').className = 'terminal-status status-connected';
+                document.getElementById('terminalTitle').textContent = data.id;
+                currentServer = data.id;
+                fitAddon.fit();
+                socket.emit('ssh:resize', { rows: term.rows, cols: term.cols });
+                
+                addLog('success', `成功连接到 ${data.username}@${data.host}:${data.port}`);
+                showToast('success', 'SSH连接成功');
+                loadServers();
+            });
+
+            socket.on('ssh:data', (data) => {
+                if (term) {
+                    term.write(atob(data.data));
+                }
+            });
+
+            socket.on('ssh:error', (data) => {
+                term.writeln(`\x1b[31m[错误] ${data.message}\x1b[0m`);
+                document.getElementById('terminalStatus').innerHTML = '<i class="fas fa-circle"></i> 错误';
+                document.getElementById('terminalStatus').className = 'terminal-status status-disconnected';
+                
+                addLog('error', `SSH错误: ${data.message}`);
+                showToast('error', `连接失败: ${data.message}`);
+            });
+
+            socket.on('ssh:disconnected', (data) => {
+                term.writeln(`\x1b[33m[SSH] 连接已断开: ${data.message}\x1b[0m`);
+                document.getElementById('terminalStatus').innerHTML = '<i class="fas fa-circle"></i> 未连接';
+                document.getElementById('terminalStatus').className = 'terminal-status status-disconnected';
+                document.getElementById('terminalTitle').textContent = '未连接';
+                currentServer = null;
+                
+                addLog('info', `连接已断开: ${data.message}`);
+                loadServers();
+            });
+        }
+
+        function loadServers() {
+            fetch('/api/servers')
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('serverList');
+                    if (data.servers.length === 0) {
+                        list.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">暂无服务器配置<br><small>点击下方按钮添加</small></div>';
+                        return;
+                    }
+                    
+                    // Group servers by first letter or custom group
+                    const grouped = groupServers(data.servers);
+                    
+                    list.innerHTML = Object.entries(grouped).map(([group, servers]) => `
+                        <div class="server-group">
+                            <div class="server-group-header">
+                                <i class="fas fa-folder"></i> ${group}
+                            </div>
+                            ${servers.map(s => `
+                                <div class="server-item ${s.connected ? 'connected' : ''}" id="server-${s.id.replace(/[@:]/g, '-')}">
+                                    <div class="server-name">
+                                        <i class="fas fa-server"></i>
+                                        ${s.name}
+                                    </div>
+                                    <div class="server-host">${s.username}@${s.host}:${s.port}</div>
+                                    <div class="server-meta">
+                                        <span><i class="fas fa-clock"></i> ${new Date().toLocaleTimeString()}</span>
+                                    </div>
+                                    <div class="server-actions">
+                                        <button class="btn-small ${s.connected ? 'btn-disconnect' : 'btn-connect'}" onclick="connectToServer('${s.id}')">
+                                            <i class="fas fa-${s.connected ? 'unlink' : 'link'}"></i>
+                                            ${s.connected ? '断开' : '连接'}
+                                        </button>
+                                        <button class="btn-small btn-delete" onclick="deleteServer('${s.id}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    console.error('Failed to load servers:', err);
+                    showToast('error', '加载服务器列表失败');
+                });
+        }
+
+        function groupServers(servers) {
+            // Simple grouping by first letter of name
+            const groups = {};
+            servers.forEach(s => {
+                const firstLetter = s.name.charAt(0).toUpperCase();
+                if (!groups[firstLetter]) {
+                    groups[firstLetter] = [];
+                }
+                groups[firstLetter].push(s);
+            });
+            return groups;
+        }
+
+        function filterServers() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.server-item');
+            items.forEach(item => {
+                const name = item.querySelector('.server-name').textContent.toLowerCase();
+                const host = item.querySelector('.server-host').textContent.toLowerCase();
+                if (name.includes(search) || host.includes(search)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function showAddModal() {
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        function hideAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+            document.getElementById('serverForm').reset();
+        }
+
+        function toggleAuthFields() {
+            const method = document.getElementById('authMethod').value;
+            document.getElementById('passwordGroup').style.display = method === 'password' ? 'block' : 'none';
+            document.getElementById('keyGroup').style.display = method === 'key' ? 'block' : 'none';
+            document.getElementById('passphraseGroup').style.display = method === 'key' ? 'block' : 'none';
+        }
+
+        function saveServer(event) {
+            event.preventDefault();
+
+            const method = document.getElementById('authMethod').value;
+            const config = {
+                name: document.getElementById('serverName').value || document.getElementById('serverHost').value,
+                host: document.getElementById('serverHost').value,
+                port: parseInt(document.getElementById('serverPort').value) || 22,
+                username: document.getElementById('serverUser').value,
+                password: method === 'password' ? document.getElementById('serverPassword').value : null,
+                privateKey: method === 'key' ? document.getElementById('serverKey').value : null,
+                passphrase: method === 'key' ? document.getElementById('serverPassphrase').value : null
+            };
+
+            fetch('/api/servers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    hideAddModal();
+                    loadServers();
+                    showToast('success', '服务器配置已保存');
+                    addLog('success', `添加服务器: ${config.name}`);
+                } else {
+                    showToast('error', '保存失败: ' + data.error);
+                }
+            })
+            .catch(err => {
+                showToast('error', '保存失败: ' + err.message);
+            });
+        }
+
+        function connectToServer(id) {
+            // If already connected, disconnect
+            if (currentServer === id) {
+                socket.emit('ssh:disconnect');
+                addLog('info', `断开连接: ${id}`);
+                return;
+            }
+
+            // Disconnect current if any
+            if (currentServer) {
+                socket.emit('ssh:disconnect');
+            }
+
+            // Get server config
+            fetch('/api/servers')
+                .then(res => res.json())
+                .then(data => {
+                    const server = data.servers.find(s => s.id === id);
+                    if (!server) {
+                        term.writeln('\x1b[31m[错误] 找不到服务器配置\x1b[0m');
+                        showToast('error', '找不到服务器配置');
+                        return;
+                    }
+
+                    term.writeln(`\x1b[36m[SSH] 正在连接 ${server.username}@${server.host}:${server.port}...\x1b[0m`);
+                    addLog('info', `正在连接 ${server.username}@${server.host}:${server.port}...`);
+                    
+                    socket.emit('ssh:connect', {
+                        id: server.id,
+                        host: server.host,
+                        port: server.port,
+                        username: server.username,
+                    });
+                });
+        }
+
+        function deleteServer(id) {
+            if (!confirm('确定要删除这个服务器配置吗？')) return;
+
+            fetch(`/api/servers/${encodeURIComponent(id)}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadServers();
+                        showToast('success', '服务器已删除');
+                        addLog('info', `删除服务器: ${id}`);
+                    } else {
+                        showToast('error', '删除失败: ' + data.error);
+                    }
+                })
+                .catch(err => showToast('error', '删除失败: ' + err.message));
+        }
+
+        function sendQuickCommand(cmd) {
+            if (!socket || !currentServer) {
+                showToast('error', '请先连接服务器');
+                return;
+            }
+            socket.emit('ssh:data', { data: btoa(cmd + '\n') });
+            addLog('info', `执行快捷命令: ${cmd}`);
+        }
+
+        function clearTerminal() {
+            term.clear();
+            showToast('info', '终端已清空');
+        }
+
+        function toggleLogs() {
+            const panel = document.getElementById('logsPanel');
+            panel.classList.toggle('active');
+        }
+
+        function clearLogs() {
+            document.getElementById('logsContent').innerHTML = '';
+            logs = [];
+            showToast('info', '日志已清空');
+        }
+
+        function addLog(type, message) {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = { time, type, message };
+            logs.push(logEntry);
+            
+            const logsContent = document.getElementById('logsContent');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-message ${type}">${message}</span>
+            `;
+            logsContent.appendChild(entry);
+            logsContent.scrollTop = logsContent.scrollHeight;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            setTimeout(() => fitAddon.fit(), 300);
+        }
+
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'exclamation-circle' : 'info-circle';
+            
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Model Health Monitor
+        function checkModelHealth() {
+            // Simulate model health check (replace with actual API call)
+            const indicator = document.getElementById('modelStatusIndicator');
+            const modelName = document.getElementById('currentModelName');
+            
+            // This would be replaced with actual health check
+            // For now, just show the current model
+            modelName.textContent = 'zai/glm-4.5-air';
+            indicator.className = 'status-indicator healthy';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initTerminal();
+            initSocket();
+            loadServers();
+            checkModelHealth();
+            
+            // Check model health every 30 seconds
+            setInterval(checkModelHealth, 30000);
+        });
+    </script>
+</body>
+</html>

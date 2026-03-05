@@ -1,0 +1,1 @@
+{"timestamp": "2026-03-05T00:04:39.044122", "from_model": "zai/glm-4.7", "to_model": "bailian/qwen3-coder-plus", "reason": "billing_error", "success": true, "duration_ms": 2201, "error_message": null}

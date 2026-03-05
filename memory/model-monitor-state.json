@@ -1,0 +1,47 @@
+{
+  "model_errors": {
+    "bailian/qwen3.5-plus": {
+      "type": "timeout",
+      "message": "Request was aborted.",
+      "timestamp": "2026-03-05T16:53:10.213209"
+    },
+    "zai/glm-4.5-air": {
+      "type": "timeout",
+      "message": "Request was aborted.",
+      "timestamp": "2026-03-05T16:53:10.215059"
+    },
+    "zai/glm-4.6v": {
+      "type": "timeout",
+      "message": "400 API \u8c03\u7528\u53c2\u6570\u6709\u8bef\uff0c\u8bf7\u68c0\u67e5\u6587\u6863\u3002Requested token count exceeds the model's maximum context length of 131072 toke",
+      "timestamp": "2026-03-05T16:53:10.213582"
+    }
+  },
+  "last_check": "2026-03-05T20:00:05.294137",
+  "error_history": [
+    {
+      "model": "bailian/qwen3.5-plus",
+      "type": "timeout",
+      "timestamp": "2026-03-05T12:37:07.630324"
+    },
+    {
+      "model": "zai/glm-4.5-air",
+      "type": "timeout",
+      "timestamp": "2026-03-05T12:37:07.630650"
+    },
+    {
+      "model": "bailian/qwen3.5-plus",
+      "type": "timeout",
+      "timestamp": "2026-03-05T16:53:10.213223"
+    },
+    {
+      "model": "zai/glm-4.6v",
+      "type": "timeout",
+      "timestamp": "2026-03-05T16:53:10.213591"
+    },
+    {
+      "model": "zai/glm-4.5-air",
+      "type": "timeout",
+      "timestamp": "2026-03-05T16:53:10.215068"
+    }
+  ]
+}

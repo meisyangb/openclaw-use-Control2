@@ -1,0 +1,108 @@
+{
+  "version": "1.0.0",
+  "description": "提交策略配置 - 防止错误提交导致系统崩溃",
+  
+  "commit_rules": {
+    "require_message": true,
+    "min_message_length": 10,
+    "require_conventional_commits": true,
+    "allowed_types": [
+      "feat",
+      "fix",
+      "docs",
+      "style",
+      "refactor",
+      "perf",
+      "test",
+      "chore",
+      "ci",
+      "build",
+      "revert"
+    ],
+    "require_scope": false,
+    "blocked_patterns": [
+      "WIP",
+      "wip",
+      "temp",
+      "tmp",
+      "fixup",
+      "squash"
+    ]
+  },
+  
+  "pre_commit_checks": {
+    "enabled": true,
+    "checks": [
+      {
+        "name": "health_check",
+        "required": true,
+        "timeout": 60
+      },
+      {
+        "name": "test_suite",
+        "required": false,
+        "timeout": 300
+      },
+      {
+        "name": "lint",
+        "required": false,
+        "timeout": 60
+      },
+      {
+        "name": "backup",
+        "required": true,
+        "timeout": 30
+      }
+    ]
+  },
+  
+  "auto_backup": {
+    "enabled": true,
+    "before_commit": true,
+    "before_release": true,
+    "before_merge": true,
+    "max_backups": 10,
+    "cleanup_old": true
+  },
+  
+  "auto_rollback": {
+    "enabled": true,
+    "triggers": [
+      "commit_failed",
+      "test_failed",
+      "health_check_failed",
+      "push_failed"
+    ],
+    "cooldown_minutes": 5,
+    "max_rollback_age_hours": 24
+  },
+  
+  "safety_mode": {
+    "enabled": true,
+    "protected_branches": [
+      "main",
+      "master",
+      "develop"
+    ],
+    "require_backup_before_delete": true,
+    "confirm_destructive_operations": true,
+    "max_files_per_commit": 50,
+    "max_commit_size_mb": 10
+  },
+  
+  "release_policy": {
+    "require_changelog": true,
+    "require_version_bump": true,
+    "require_tag": true,
+    "auto_push": false,
+    "require_manual_approval": true,
+    "blocked_hours": [0, 1, 2, 3, 4, 5],
+    "require_health_check": true
+  },
+  
+  "emergency_stop": {
+    "enabled": true,
+    "trigger_file": ".openclaw/EMERGENCY_STOP",
+    "auto_cleanup": true
+  }
+}

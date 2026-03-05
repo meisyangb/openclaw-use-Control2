@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2026-03-05T15:38:52.000530",
+    "product": "MindForge",
+    "changes": [
+      "添加定时任务"
+    ],
+    "improvements": [
+      "性能提升"
+    ],
+    "version": "v1.0"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "models": [
+    {
+      "name": "Transformer",
+      "learned_at": "2026-03-05T15:38:52.000201",
+      "insights": [
+        "注意力机制",
+        "并行计算"
+      ]
+    }
+  ],
+  "technologies": [],
+  "patterns": []
+}

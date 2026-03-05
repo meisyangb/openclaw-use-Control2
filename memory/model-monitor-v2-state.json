@@ -1,12 +1,12 @@
 {
   "version": "2.0.0",
-  "last_check": "2026-03-05T15:25:03.929398",
+  "last_check": "2026-03-05T15:40:04.436981",
   "current_model": "bailian/qwen3.5-plus",
   "models": {},
   "stats": {
-    "total_checks": 21,
+    "total_checks": 24,
     "total_switches": 0,
-    "total_errors": 71,
+    "total_errors": 82,
     "start_time": "2026-03-05T00:04:34.668725"
   }
 }

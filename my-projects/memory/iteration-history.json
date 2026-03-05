@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-03-05T15:38:52.000530",
+    "product": "MindForge",
+    "changes": [
+      "添加定时任务"
+    ],
+    "improvements": [
+      "性能提升"
+    ],
+    "version": "v1.0"
+  },
+  {
+    "timestamp": "2026-03-05T15:52:21.308375",
+    "product": "MindForge",
+    "changes": [
+      "安装所有模块",
+      "完善功能"
+    ],
+    "improvements": [
+      "性能提升",
+      "功能完整"
+    ],
+    "version": "v2.0"
+  }
+]

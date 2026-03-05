@@ -1,0 +1,3 @@
+{"id": "points_1772694686.493359", "timestamp": "2026-03-05T15:11:26.493368", "action": "external_exploration", "score_change": 5, "reason": "GitHub AI 项目学习", "category": "学习类", "before_points": 80, "after_points": 85}
+{"id": "points_1772694686.561502", "timestamp": "2026-03-05T15:11:26.561519", "action": "complete_feature", "score_change": 5, "reason": "创建文字冒险游戏", "category": "开发类", "before_points": 85, "after_points": 90}
+{"id": "points_1772694686.625897", "timestamp": "2026-03-05T15:11:26.625911", "action": "safety_compliance", "score_change": 5, "reason": "遵守安全规则", "category": "安全类", "before_points": 90, "after_points": 95}

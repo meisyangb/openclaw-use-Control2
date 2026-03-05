@@ -1,0 +1,63 @@
+# 依赖文件
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 构建输出
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# 缓存文件
+.cache/
+*.cache
+.parcel-cache/
+
+# 日志文件
+*.log
+logs/
+
+# 环境配置
+.env
+.env.local
+.env.*.local
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 测试覆盖
+coverage/
+.nyc_output/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 状态文件 (频繁变化)
+memory/model-monitor-state.json
+memory/heartbeat-state.json
+*.state.json
+
+# 大型数据文件
+*.db
+*.sqlite
+*.sqlite3
+data/*.json

@@ -297,3 +297,65 @@ npm start
 ---
 
 *此文件是我的长期记忆，记录关键决策和学习，供未来会话参考。每次会话开始时读取此文件。*
+---
+
+## 2026-03-05 自我进化里程碑
+
+### 🎯 完成的自我进化
+
+**学习内容**:
+- 研究了 OpenClaw 内置 fallback 架构 (model-fallback.ts, failover-error.ts)
+- 学习了 adaptive-agent skill 的自适应学习模式
+- 分析了现代 AI 项目架构 (LangChain, AutoGPT, Semantic Kernel)
+
+**创建的文件**:
+- `scripts/adaptive_learning.py` - 自适应学习框架 v1.0 (17.7KB) ✅
+- `memory/SELF-EVOLUTION-2026-03-05.md` - 进化记录 ✅
+- `memory/adaptive-agent-state.json` - 学习状态持久化 ✅
+- `memory/adaptive-learning.log` - 学习日志 ✅
+
+**核心能力**:
+1. **模式识别** (PatternRecognizer) - 从交互中学习成功/失败模式
+2. **偏好学习** (PreferenceLearner) - 学习用户偏好，置信度累积
+3. **性能优化** (PerformanceOptimizer) - 记录指标，跟踪趋势
+4. **状态持久化** (StateManager) - JSON 状态保存，学习历史记录
+
+**使用方法**:
+```bash
+# 查看状态
+python3 ~/.openclaw/workspace/scripts/adaptive_learning.py --status
+
+# 学习偏好
+python3 ~/.openclaw/workspace/scripts/adaptive_learning.py --learn "response_style=detailed"
+
+# 模拟学习
+python3 ~/.openclaw/workspace/scripts/adaptive_learning.py --simulate
+```
+
+**集成**:
+- ✅ 已集成到 HEARTBEAT.md
+- ✅ 已更新 IDENTITY.md (新增 🔄 自适应学习)
+- ✅ 已更新 MEMORY.md (本文件)
+
+**进化机制**:
+```
+交互 → 记录 → 分析 → 学习 → 调整 → 验证
+  ↓                                    ↑
+  └────────────────────────────────────┘
+```
+
+### 🧬 身份进化
+
+**更新前**:
+- Name: FullStack Engineer with Memory Intelligence
+- Emoji: 🧠🛠️
+
+**更新后**:
+- Name: FullStack Engineer with Memory Intelligence & **Adaptive Learning**
+- Emoji: 🧠🛠️🔄
+
+**新增能力**:
+- 从每次交互中学习模式和偏好
+- 自主优化响应策略
+- 持续自我改进
+- 在安全边界内进化

@@ -15,10 +15,25 @@ python3 ~/.openclaw/workspace/scripts/model_monitor.py
 - [ ] 是否有auth错误
 - [ ] 自动切换到备用模型
 
-## 2. 状态文件检查
+## 2. 自适应学习状态检查 (新增)
+
+运行自适应学习框架：
+```bash
+python3 ~/.openclaw/workspace/scripts/adaptive_learning.py --status
+```
+
+检查项目：
+- [ ] 查看学习进度
+- [ ] 识别成功模式
+- [ ] 应用优化建议
+- [ ] 更新用户偏好
+
+## 3. 状态文件检查
 
 - `memory/model-monitor-state.json` - 监控状态
 - `memory/model-monitor.log` - 错误日志
+- `memory/adaptive-agent-state.json` - 自适应学习状态 (新增)
+- `memory/adaptive-learning.log` - 学习日志 (新增)
 
 ## 3. 当前模型配置 (2026-03-05 更新)
 

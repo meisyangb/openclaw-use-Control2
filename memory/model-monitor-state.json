@@ -1,5 +1,27 @@
 {
-  "model_errors": {},
-  "last_check": "2026-03-05T11:00:47.060145",
-  "error_history": []
+  "model_errors": {
+    "bailian/qwen3.5-plus": {
+      "type": "timeout",
+      "message": "Request was aborted.",
+      "timestamp": "2026-03-05T12:37:07.630311"
+    },
+    "zai/glm-4.5-air": {
+      "type": "timeout",
+      "message": "Request was aborted.",
+      "timestamp": "2026-03-05T12:37:07.630642"
+    }
+  },
+  "last_check": "2026-03-05T13:06:50.242719",
+  "error_history": [
+    {
+      "model": "bailian/qwen3.5-plus",
+      "type": "timeout",
+      "timestamp": "2026-03-05T12:37:07.630324"
+    },
+    {
+      "model": "zai/glm-4.5-air",
+      "type": "timeout",
+      "timestamp": "2026-03-05T12:37:07.630650"
+    }
+  ]
 }

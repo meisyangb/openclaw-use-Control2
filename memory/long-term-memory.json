@@ -1,0 +1,64 @@
+{
+  "memories": [
+    {
+      "id": "stm_1772691439.509339",
+      "content": "用户喜欢详细的代码解释",
+      "memory_type": "semantic",
+      "importance": 0.8,
+      "created_at": "2026-03-05T14:17:19.509356",
+      "updated_at": "2026-03-05T14:17:19.509579",
+      "accessed_count": 0,
+      "last_accessed": null,
+      "tags": [
+        "preference",
+        "coding"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "stm_1772691439.509819",
+      "content": "完成了模型监控系统",
+      "memory_type": "semantic",
+      "importance": 0.7,
+      "created_at": "2026-03-05T14:17:19.509831",
+      "updated_at": "2026-03-05T14:17:19.510126",
+      "accessed_count": 0,
+      "last_accessed": null,
+      "tags": [
+        "achievement",
+        "coding"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "ltm_1772691439.511484",
+      "content": "用户喜欢详细的代码解释",
+      "memory_type": "semantic",
+      "importance": 0.8,
+      "created_at": "2026-03-05T14:17:19.511497",
+      "updated_at": "2026-03-05T14:17:19.511508",
+      "accessed_count": 0,
+      "last_accessed": null,
+      "tags": [
+        "preference",
+        "coding"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "ltm_1772691439.511819",
+      "content": "完成了模型监控系统",
+      "memory_type": "semantic",
+      "importance": 0.7,
+      "created_at": "2026-03-05T14:17:19.511831",
+      "updated_at": "2026-03-05T14:17:19.511842",
+      "accessed_count": 0,
+      "last_accessed": null,
+      "tags": [
+        "achievement",
+        "coding"
+      ],
+      "metadata": {}
+    }
+  ]
+}

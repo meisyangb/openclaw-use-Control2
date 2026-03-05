@@ -6,14 +6,14 @@
       "memory_type": "semantic",
       "importance": 0.8,
       "created_at": "2026-03-05T14:17:19.509356",
-      "updated_at": "2026-03-05T14:17:19.509579",
-      "accessed_count": 0,
-      "last_accessed": null,
       "tags": [
         "preference",
         "coding"
       ],
-      "metadata": {}
+      "metadata": {},
+      "accessed_count": 0,
+      "last_accessed": null,
+      "updated_at": "2026-03-05T14:17:19.509579"
     },
     {
       "id": "stm_1772691439.509819",
@@ -21,14 +21,14 @@
       "memory_type": "semantic",
       "importance": 0.7,
       "created_at": "2026-03-05T14:17:19.509831",
-      "updated_at": "2026-03-05T14:17:19.510126",
-      "accessed_count": 0,
-      "last_accessed": null,
       "tags": [
         "achievement",
         "coding"
       ],
-      "metadata": {}
+      "metadata": {},
+      "accessed_count": 0,
+      "last_accessed": null,
+      "updated_at": "2026-03-05T14:17:19.510126"
     },
     {
       "id": "ltm_1772691439.511484",
@@ -36,14 +36,14 @@
       "memory_type": "semantic",
       "importance": 0.8,
       "created_at": "2026-03-05T14:17:19.511497",
-      "updated_at": "2026-03-05T14:17:19.511508",
-      "accessed_count": 0,
-      "last_accessed": null,
       "tags": [
         "preference",
         "coding"
       ],
-      "metadata": {}
+      "metadata": {},
+      "accessed_count": 0,
+      "last_accessed": null,
+      "updated_at": "2026-03-05T14:17:19.511508"
     },
     {
       "id": "ltm_1772691439.511819",
@@ -51,14 +51,28 @@
       "memory_type": "semantic",
       "importance": 0.7,
       "created_at": "2026-03-05T14:17:19.511831",
-      "updated_at": "2026-03-05T14:17:19.511842",
-      "accessed_count": 0,
-      "last_accessed": null,
       "tags": [
         "achievement",
         "coding"
       ],
-      "metadata": {}
+      "metadata": {},
+      "accessed_count": 0,
+      "last_accessed": null,
+      "updated_at": "2026-03-05T14:17:19.511842"
+    },
+    {
+      "id": "stm_1772695423.854821",
+      "content": "用户喜欢详细的代码解释",
+      "memory_type": "semantic",
+      "importance": 0.8,
+      "created_at": "2026-03-05T15:23:43.854839",
+      "tags": [
+        "preference"
+      ],
+      "metadata": {},
+      "accessed_count": 0,
+      "last_accessed": null,
+      "updated_at": null
     }
   ]
 }

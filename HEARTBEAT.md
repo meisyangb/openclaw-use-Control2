@@ -95,3 +95,32 @@ python3 ~/.openclaw/workspace/scripts/adaptive_learning.py --status
 - 保持写日志的习惯
 - 记住从错误中学习
 - Git提交: 本地已提交，待推送GitHub
+## 7. 学习工具系统 (新增)
+
+使用 skill_helper 选择最佳技能组合：
+
+```bash
+# 规划学习
+python3 ~/.openclaw/workspace/scripts/skill_helper.py --plan "主题 | 目标"
+
+# 推荐技能
+python3 ~/.openclaw/workspace/scripts/skill_helper.py --recommend <类型>
+
+# 查看状态
+python3 ~/.openclaw/workspace/scripts/skill_helper.py --status
+```
+
+**学习场景**:
+- research → web_search, web_fetch, browser-automation
+- coding → coding-agent, ai-model-manager
+- documentation → basic-system, skill-creator
+- github → github, gh-issues
+
+## 8. 重要提醒
+
+- 每次 token 都很珍贵 - 最大化利用每次请求
+- 避免频繁请求 - 使用智能策略
+- 保持写日志的习惯
+- 记住从错误中学习
+- **永远不要在学习中迷失自我** (核心原则)
+- Git 提交：本地已提交，待推送 GitHub
